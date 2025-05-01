@@ -334,7 +334,14 @@ data:
   hsts: "true"
   hsts-include-subdomains: "true"
   hsts-max-age: "31536000"
-  add-headers: "ingress-nginx/custom-headers"
+  proxy-set-headers: |
+    {
+      "X-Frame-Options": "SAMEORIGIN",
+      "X-Content-Type-Options": "nosniff",
+      "X-XSS-Protection": "1; mode=block",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Content-Security-Policy": "default-src 'self'; script-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; frame-ancestors 'self'; form-action 'self'"
+    }
 kind: ConfigMap
 metadata:
   labels:
@@ -677,24 +684,3 @@ webhooks:
     resources:
     - ingresses
   sideEffects: None
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: ingress-nginx-custom-headers
-  namespace: ingress-nginx
-  labels:
-    app.kubernetes.io/component: controller
-    app.kubernetes.io/instance: ingress-nginx
-    app.kubernetes.io/name: ingress-nginx
-    app.kubernetes.io/part-of: ingress-nginx
-    app.kubernetes.io/version: 1.12.2
-data:
-  X-Frame-Options: "SAMEORIGIN"
-  X-Content-Type-Options: "nosniff"
-  X-XSS-Protection: "1; mode=block"
-  Referrer-Policy: "strict-origin-when-cross-origin"
-  Content-Security-Policy: "default-src 'self'; script-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; frame-ancestors 'self'; form-action 'self'"
----
-apiVersion: v1
-kind: Service
