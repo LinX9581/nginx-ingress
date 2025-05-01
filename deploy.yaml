@@ -334,6 +334,8 @@ data:
   hsts: "true"
   hsts-include-subdomains: "true"
   hsts-max-age: "31536000"
+  allow-snippet-annotations: "true"
+  annotations-risk-level: "Critical"
   proxy-set-headers: |
     {
       "X-Frame-Options": "SAMEORIGIN",
