@@ -322,6 +322,19 @@ subjects:
 apiVersion: v1
 data:
   log-format-upstream: '$remote_addr $upstream_response_time $upstream_cache_status [$time_local] $http_host "$request" $status $body_bytes_sent "$http_referer" "$http_user_agent" "$http_x_forwarded_for"'
+  server-tokens: "false"
+  hide-headers: "Server"
+  ssl-protocols: "TLSv1.2 TLSv1.3"
+  ssl-ciphers: "ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384"
+  proxy-body-size: "10m"
+  proxy-connect-timeout: "10"
+  proxy-read-timeout: "120"
+  proxy-send-timeout: "120"
+  enable-ocsp: "true"
+  hsts: "true"
+  hsts-include-subdomains: "true"
+  hsts-max-age: "31536000"
+  add-headers: "ingress-nginx/custom-headers"
 kind: ConfigMap
 metadata:
   labels:
@@ -664,3 +677,24 @@ webhooks:
     resources:
     - ingresses
   sideEffects: None
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ingress-nginx-custom-headers
+  namespace: ingress-nginx
+  labels:
+    app.kubernetes.io/component: controller
+    app.kubernetes.io/instance: ingress-nginx
+    app.kubernetes.io/name: ingress-nginx
+    app.kubernetes.io/part-of: ingress-nginx
+    app.kubernetes.io/version: 1.12.2
+data:
+  X-Frame-Options: "SAMEORIGIN"
+  X-Content-Type-Options: "nosniff"
+  X-XSS-Protection: "1; mode=block"
+  Referrer-Policy: "strict-origin-when-cross-origin"
+  Content-Security-Policy: "default-src 'self'; script-src 'self'; img-src 'self'; style-src 'self'; font-src 'self'; frame-ancestors 'self'; form-action 'self'"
+---
+apiVersion: v1
+kind: Service
